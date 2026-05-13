@@ -161,7 +161,13 @@ class ToolGateway:
     def _tool_write(self, raw: str) -> GatewayResult:
         path_text, body = first_line_and_body(raw)
         path = self._resolve_allowed_path(path_text, must_exist=False, access_reason="write file")
-        approved, edited = self._maybe_approve("write", "Gemini write request", body, True, {"path": str(path)})
+
+        warning = self._check_placeholders(body)
+        meta = {"path": str(path)}
+        if warning:
+            meta["warning"] = warning.strip()
+
+        approved, edited = self._maybe_approve("write", "Gemini write request", body, True, meta)
         if not approved:
             return GatewayResult(False, "[BLOCKED] User denied file write.")
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -170,8 +176,8 @@ class ToolGateway:
         if not path.exists():
             return GatewayResult(False, f"[ERROR] Failed to verify file existence after write: {path}")
 
-        warning = self._check_placeholders(edited)
-        return GatewayResult(True, f"[OK] Wrote {edited.count(chr(10)) + 1} lines to {path}{warning}")
+        final_warning = self._check_placeholders(edited)
+        return GatewayResult(True, f"[OK] Wrote {edited.count(chr(10)) + 1} lines to {path}{final_warning}")
 
     def _tool_replace(self, raw: str) -> GatewayResult:
         path_text, old, new = parse_replace_payload(raw)
@@ -183,7 +189,13 @@ class ToolGateway:
         if count > 1:
             return GatewayResult(False, f"[ERROR] Old snippet matched {count} times; use a larger exact snippet.")
         updated = current.replace(old, new, 1)
-        approved, edited = self._maybe_approve("replace", "Gemini replace request", updated, True, {"path": str(path)})
+
+        warning = self._check_placeholders(updated)
+        meta = {"path": str(path)}
+        if warning:
+            meta["warning"] = warning.strip()
+
+        approved, edited = self._maybe_approve("replace", "Gemini replace request", updated, True, meta)
         if not approved:
             return GatewayResult(False, "[BLOCKED] User denied file replacement.")
         path.write_text(edited, encoding="utf-8")
@@ -191,13 +203,19 @@ class ToolGateway:
         if not path.exists():
             return GatewayResult(False, f"[ERROR] Failed to verify file existence after replace: {path}")
 
-        warning = self._check_placeholders(edited)
-        return GatewayResult(True, f"[OK] Replaced snippet in {path}{warning}")
+        final_warning = self._check_placeholders(edited)
+        return GatewayResult(True, f"[OK] Replaced snippet in {path}{final_warning}")
 
     def _tool_append(self, raw: str) -> GatewayResult:
         path_text, body = first_line_and_body(raw)
         path = self._resolve_allowed_path(path_text, must_exist=False, access_reason="append to file")
-        approved, edited = self._maybe_approve("append", "Gemini append request", body, True, {"path": str(path)})
+
+        warning = self._check_placeholders(body)
+        meta = {"path": str(path)}
+        if warning:
+            meta["warning"] = warning.strip()
+
+        approved, edited = self._maybe_approve("append", "Gemini append request", body, True, meta)
         if not approved:
             return GatewayResult(False, "[BLOCKED] User denied file append.")
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -207,8 +225,8 @@ class ToolGateway:
         if not path.exists():
             return GatewayResult(False, f"[ERROR] Failed to verify file existence after append: {path}")
 
-        warning = self._check_placeholders(edited)
-        return GatewayResult(True, f"[OK] Appended {len(edited)} characters to {path}{warning}")
+        final_warning = self._check_placeholders(edited)
+        return GatewayResult(True, f"[OK] Appended {len(edited)} characters to {path}{final_warning}")
 
     def _tool_mkdir(self, raw: str) -> GatewayResult:
         path = self._resolve_allowed_path(raw, must_exist=False, access_reason="create directory")

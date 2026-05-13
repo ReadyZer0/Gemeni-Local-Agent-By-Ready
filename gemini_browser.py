@@ -727,7 +727,8 @@ class GeminiBrowser(QWidget):
         text = root.textContent || '';
       }
       text = clean(text);
-      if (text && !seen.has(text)) {
+      const noise = ['gemini', 'new chat', 'tools', 'pro', 'fast', 'thinking'];
+      if (text && !seen.has(text) && !noise.includes(text)) {
         seen.add(text);
         chunks.push(text);
       }

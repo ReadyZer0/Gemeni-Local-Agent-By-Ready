@@ -118,7 +118,11 @@ class GeminiAgentLoop(QObject):
         self._process_reply(reply)
 
     def _build_user_prompt(self, user_text: str, attachments: list[Attachment]) -> str:
-        return f"{user_text.strip()}{AttachmentManager.prompt_summary(attachments)}".strip()
+        base_prompt = f"{user_text.strip()}{AttachmentManager.prompt_summary(attachments)}".strip()
+        hint = GeminiAgentLoop._recommended_tool_hint(user_text)
+        if hint:
+            return f"{base_prompt}\n\n[Planner Hint: {hint}]"
+        return base_prompt
 
     def _should_seed_tools(self) -> bool:
         meta = self.history.metadata()
@@ -436,7 +440,7 @@ class GeminiAgentLoop(QObject):
             "Use only a REAL tool name from this list:\n"
             f"{allowed_tools}\n\n"
             f"{recommendation}\n\n"
-            "Do NOT use the word 'tool' as a tool name. Do NOT use placeholder names such as tool_name, local_tool, actual_tool, or your_tool.\n\n"
+            "Do not invent tool names or use generic placeholders.\n\n"
             f"{self._tool_examples_text(default_root)}\n\n"
             f"If the user did not provide a destination path, choose a sensible path under {default_root} or the user's Desktop.\n\n"
             f"USER REQUEST:\n{self.current_user_text.strip()}"
@@ -646,23 +650,30 @@ class GeminiAgentLoop(QObject):
     @staticmethod
     def _recommended_tool_hint(user_text: str) -> str:
         text = str(user_text or "").lower()
+        hint = ""
         if GeminiAgentLoop._looks_like_plain_file_request(text):
-            return (
+            hint = (
                 "Recommended first tool for this request: use ~@write@~. "
                 "Put the full target file path on the first payload line, then the requested text content on the remaining lines."
             )
-        if GeminiAgentLoop._looks_like_artifact_request(text):
-            return (
+        elif GeminiAgentLoop._looks_like_artifact_request(text):
+            hint = (
                 "Recommended first tool for this request: use ~@write@~. "
                 "Create the requested local file directly instead of making a Gemini artifact card."
             )
-        if "folder" in text or "directory" in text:
-            return "Recommended first tool for this request: use ~@mkdir@~ for creation or ~@explorer@~ for listing."
-        if any(word in text for word in ["read", "open file", "show file"]):
-            return "Recommended first tool for this request: use ~@read@~ for files or ~@explorer@~ for folders."
-        if any(word in text for word in ["run", "powershell", "command", "terminal", "wsl"]):
-            return "Recommended first tool for this request: use ~@powershell@~, ~@terminal@~, or ~@wsl@~ as requested."
-        return "Choose the single real tool that directly performs the user's local action."
+        elif "folder" in text or "directory" in text:
+            hint = "Recommended first tool for this request: use ~@mkdir@~ for creation or ~@explorer@~ for listing."
+        elif any(word in text for word in ["read", "open file", "show file"]):
+            hint = "Recommended first tool for this request: use ~@read@~ for files or ~@explorer@~ for folders."
+        elif any(word in text for word in ["run", "powershell", "command", "terminal", "wsl"]):
+            hint = "Recommended first tool for this request: use ~@powershell@~, ~@terminal@~, or ~@wsl@~ as requested."
+        else:
+            hint = "Choose the single real tool that directly performs the user's local action."
+
+        if "run it" in text:
+            hint += " Use the FULL ABSOLUTE PATH of the file you intend to run."
+
+        return hint.strip()
 
     def _correct_invalid_tool_call(self, invalid_calls: list[ToolCall]) -> None:
         names = ", ".join(sorted({call.name for call in invalid_calls}))
@@ -769,6 +780,8 @@ class GeminiAgentLoop(QObject):
         if not candidate:
             return ""
         filename, body = candidate
+        if "LOCAL AGENT ENFORCEMENT:" in body:
+            return ""
         target_path = self._unique_artifact_path(self._artifact_recovery_base_dir(filename) / filename)
         call = ToolCall("write", f"{target_path}\n{body}", "~@write@~", 0)
         self.log_signal.emit(f"[ARTIFACT] Gemini returned an app artifact instead of a write tool; saving {target_path.name}.")
@@ -837,7 +850,7 @@ class GeminiAgentLoop(QObject):
         if not blocks:
             return None
         language, code = cls._best_code_block(blocks)
-        if not code.strip():
+        if len(code.strip()) < 50:
             return None
         filename = cls._artifact_filename(user_text, reply, language, code)
         return filename, code.strip() + "\n"

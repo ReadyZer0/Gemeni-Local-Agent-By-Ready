@@ -71,6 +71,14 @@ def parse_tool_calls(text: str) -> list[ToolCall]:
         pos = end.end()
         if name in TRANSPORT_MARKERS:
             continue
+
+        if name in ("tool", "tool_name", "local_tool", "actual_tool") and raw:
+            lines = raw.split("\n", 1)
+            first_line = lines[0].strip().lower()
+            if first_line and normalize_tool_name(first_line) != first_line or first_line in ("write", "read", "explorer", "mkdir", "powershell", "wsl", "terminal", "replace", "append", "delete", "fetch", "copy", "move"):
+                name = normalize_tool_name(first_line)
+                raw = lines[1].strip() if len(lines) > 1 else ""
+
         calls.append(ToolCall(name=name, raw=raw, marker=marker, index=len(calls)))
     return calls
 

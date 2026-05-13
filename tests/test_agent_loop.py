@@ -45,7 +45,7 @@ class AgentLoopPromptTests(unittest.TestCase):
 
         prompt = GeminiAgentLoop._build_user_prompt(loop, "create a website about linux", [])
 
-        self.assertEqual(prompt, "create a website about linux")
+        self.assertIn("create a website about linux", prompt)
         self.assertNotIn("GEMINI LOCAL AGENT", prompt)
         self.assertNotIn("USER REQUEST:", prompt)
         self.assertNotIn("LOCAL_AGENT_TURN_ID", prompt)
@@ -56,7 +56,11 @@ class AgentLoopPromptTests(unittest.TestCase):
 ```html
 <!DOCTYPE html>
 <html>
-<body>Linux</body>
+<head><title>Linux</title></head>
+<body>
+  <h1>Linux</h1>
+  <p>Linux is a family of open-source Unix-like operating systems based on the Linux kernel.</p>
+</body>
 </html>
 ```
 """
@@ -66,7 +70,7 @@ class AgentLoopPromptTests(unittest.TestCase):
         self.assertIsNotNone(artifact)
         filename, code = artifact
         self.assertEqual(filename, "index.html")
-        self.assertIn("<body>Linux</body>", code)
+        self.assertIn("<h1>Linux</h1>", code)
 
     def test_does_not_extract_artifact_for_non_creation_chat(self):
         reply = """```html
@@ -139,7 +143,7 @@ I have created the text file with your requested message.
 
         self.assertNotIn("~@tool@~", prompt)
         self.assertNotIn("~@tool_name@~", prompt)
-        self.assertIn("Do NOT use the word 'tool'", prompt)
+        self.assertIn("Do not invent tool names or use generic placeholders.", prompt)
         self.assertIn("~@write@~", prompt)
         self.assertIn("~@mkdir@~", prompt)
 

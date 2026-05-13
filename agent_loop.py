@@ -118,7 +118,11 @@ class GeminiAgentLoop(QObject):
         self._process_reply(reply)
 
     def _build_user_prompt(self, user_text: str, attachments: list[Attachment]) -> str:
-        return f"{user_text.strip()}{AttachmentManager.prompt_summary(attachments)}".strip()
+        base_prompt = f"{user_text.strip()}{AttachmentManager.prompt_summary(attachments)}".strip()
+        hint = GeminiAgentLoop._recommended_tool_hint(user_text)
+        if hint:
+            return f"{base_prompt}\n\n[Planner Hint: {hint}]"
+        return base_prompt
 
     def _should_seed_tools(self) -> bool:
         meta = self.history.metadata()

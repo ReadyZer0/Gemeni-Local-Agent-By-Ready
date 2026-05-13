@@ -45,7 +45,7 @@ class AgentLoopPromptTests(unittest.TestCase):
 
         prompt = GeminiAgentLoop._build_user_prompt(loop, "create a website about linux", [])
 
-        self.assertEqual(prompt, "create a website about linux")
+        self.assertIn("create a website about linux", prompt)
         self.assertNotIn("GEMINI LOCAL AGENT", prompt)
         self.assertNotIn("USER REQUEST:", prompt)
         self.assertNotIn("LOCAL_AGENT_TURN_ID", prompt)

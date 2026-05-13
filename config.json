@@ -1,0 +1,232 @@
+{
+  "app": {
+    "name": "Gemini Local Agent",
+    "agent_mode": "gemini_first",
+    "approval_policy": "guarded"
+  },
+  "gemini": {
+    "url": "https://gemini.google.com/app",
+    "session_mode": "persistent_thread",
+    "browser_profile": "data/browser_profile/gemini",
+    "auto_seed_tools_on_new_session": false,
+    "hide_native_composer": true,
+    "model_mode": "fast",
+    "reply_stable_polls": 2,
+    "poll_interval_ms": 1500,
+    "tool_seed_user_delay_ms": 1600,
+    "send_attachment_delay_ms": 2500
+  },
+  "agent": {
+    "max_tool_loops": 12,
+    "tool_contract_once_per_session": true,
+    "force_tool_calls_for_local_actions": true,
+    "max_tool_enforcement_retries": 2,
+    "default_output_dir": "C:\\Users\\awoen\\Desktop"
+  },
+  "security": {
+    "access_mode": "ask",
+    "filesystem_roots": [
+      "E:\\AI_Suite",
+      "C:\\Users\\awoen\\Desktop",
+      "C:\\Users\\awoen\\Documents",
+      "C:\\Users\\awoen\\Downloads"
+    ],
+    "terminal_cwd": "E:\\AI_Suite",
+    "terminal_timeout_seconds": 30,
+    "max_read_bytes": 200000
+  },
+  "tools": {
+    "github_enabled": false,
+    "enabled": [
+      "read",
+      "explorer",
+      "write",
+      "replace",
+      "append",
+      "delete",
+      "mkdir",
+      "copy",
+      "move",
+      "file_info",
+      "terminal",
+      "powershell",
+      "wsl",
+      "fetch",
+      "browser_open",
+      "browser_inspect",
+      "browser_screenshot",
+      "browser_click",
+      "browser_type",
+      "git_status",
+      "git_diff",
+      "git_add",
+      "git_commit",
+      "memory_get",
+      "memory_put",
+      "mcp_status",
+      "extract_text",
+      "window_list",
+      "window_focus",
+      "window_close",
+      "gui_click",
+      "gui_type",
+      "gui_hotkey",
+      "blender_open",
+      "blender_python",
+      "excel_info",
+      "excel_read",
+      "excel_write",
+      "excel_append_row",
+      "think"
+    ],
+    "auto_approved": [
+      "read",
+      "explorer",
+      "file_info",
+      "fetch",
+      "browser_open",
+      "browser_inspect",
+      "git_status",
+      "git_diff",
+      "memory_get",
+      "memory_put",
+      "mcp_status",
+      "extract_text",
+      "window_list",
+      "excel_info",
+      "excel_read",
+      "think"
+    ],
+    "approval_required": [
+      "write",
+      "replace",
+      "append",
+      "delete",
+      "mkdir",
+      "copy",
+      "move",
+      "terminal",
+      "powershell",
+      "wsl",
+      "browser_screenshot",
+      "browser_click",
+      "browser_type",
+      "git_add",
+      "git_commit",
+      "window_focus",
+      "window_close",
+      "gui_click",
+      "gui_type",
+      "gui_hotkey",
+      "blender_open",
+      "blender_python",
+      "excel_write",
+      "excel_append_row"
+    ]
+  },
+  "mcp_servers": {
+    "filesystem": {
+      "enabled": true,
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem"
+      ]
+    },
+    "memory": {
+      "enabled": true,
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-memory"
+      ]
+    },
+    "sequential-thinking": {
+      "enabled": true,
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-sequential-thinking"
+      ]
+    },
+    "playwright": {
+      "enabled": true,
+      "command": "npx",
+      "args": [
+        "-y",
+        "@playwright/mcp@latest"
+      ]
+    },
+    "chrome-devtools": {
+      "enabled": true,
+      "command": "npx",
+      "args": [
+        "-y",
+        "chrome-devtools-mcp@latest"
+      ]
+    },
+    "git": {
+      "enabled": true,
+      "command": "python",
+      "args": [
+        "-m",
+        "mcp_server_git"
+      ]
+    },
+    "fetch": {
+      "enabled": true,
+      "command": "python",
+      "args": [
+        "-m",
+        "mcp_server_fetch"
+      ]
+    },
+    "markitdown": {
+      "enabled": true,
+      "command": "markitdown",
+      "args": []
+    },
+    "github": {
+      "enabled": false,
+      "url": "https://api.githubcopilot.com/mcp/"
+    },
+    "desktop-commander": {
+      "enabled": true,
+      "command": "npx",
+      "args": [
+        "-y",
+        "@wonderwhy-er/desktop-commander"
+      ]
+    },
+    "windows-gui": {
+      "enabled": true,
+      "python_packages": [
+        "pyautogui",
+        "pywinauto"
+      ]
+    },
+    "powershell": {
+      "enabled": true,
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass"
+      ]
+    },
+    "wsl": {
+      "enabled": true,
+      "command": "wsl",
+      "args": []
+    },
+    "blender": {
+      "enabled": true,
+      "command": "blender",
+      "args": []
+    },
+    "excel": {
+      "enabled": true,
+      "python_package": "openpyxl"
+    }
+  }
+}

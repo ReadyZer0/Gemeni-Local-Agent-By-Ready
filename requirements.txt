@@ -1,0 +1,7 @@
+PySide6>=6.6
+requests>=2.31
+openpyxl>=3.1
+pyautogui>=0.9
+pywinauto>=0.6
+psutil>=5.9
+playwright>=1.40

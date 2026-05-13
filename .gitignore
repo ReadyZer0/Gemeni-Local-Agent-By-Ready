@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+data/browser_profile/
+data/sessions/
+data/attachments/
+data/logs/
+data/memory/
+data/artifacts/
+data/**/*.jsonl

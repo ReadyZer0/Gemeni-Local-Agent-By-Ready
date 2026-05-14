@@ -1,0 +1,3 @@
+## 2026-05-14 - PySide6 Widget Tooltips and Cursor States
+**Learning:** In PySide6 desktop applications, visual discoverability is key. I added `setToolTip` to various UI components (QAction, QComboBox, QPushButton) to clarify their functionality, which is particularly useful for iconography or dense toolbars. Additionally, utilizing `setCursor(Qt.PointingHandCursor)` on buttons provides immediate visual feedback that an element is interactive.
+**Action:** When building PySide6 applications, proactively apply `setToolTip()` for any non-obvious UI elements, and use `setCursor(Qt.PointingHandCursor)` for clickable custom widgets or buttons to ensure a smooth, accessible desktop UX.

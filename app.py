@@ -173,27 +173,33 @@ class MainWindow(QMainWindow):
         self.addToolBar(toolbar)
 
         new_session = QAction("New Session", self)
+        new_session.setToolTip("Start a new local chat session")
         new_session.triggered.connect(self.new_session)
         toolbar.addAction(new_session)
 
         open_gemini = QAction("Open Gemini", self)
+        open_gemini.setToolTip("Reload the main Gemini page")
         open_gemini.triggered.connect(self.browser.load_gemini)
         toolbar.addAction(open_gemini)
 
         seed_tools = QAction("Reseed Tools", self)
+        seed_tools.setToolTip("Send tool instructions to the current chat")
         seed_tools.triggered.connect(self.seed_tools)
         toolbar.addAction(seed_tools)
 
         run_visible = QAction("Run Visible Tools", self)
+        run_visible.setToolTip("Force a read of the current Gemini page")
         run_visible.triggered.connect(self.run_visible_tools)
         toolbar.addAction(run_visible)
 
         copy_memory = QAction("Copy Gemini Memory", self)
+        copy_memory.setToolTip("Copy agent prompt to clipboard")
         copy_memory.triggered.connect(self.copy_gemini_memory)
         toolbar.addAction(copy_memory)
 
         toolbar.addWidget(QLabel(" Session "))
         self.session_mode = QComboBox()
+        self.session_mode.setToolTip("Choose whether to use a persistent thread or start fresh per task")
         self.session_mode.addItems(["persistent_thread", "fresh_per_task"])
         self.session_mode.setCurrentText(self.config.get("gemini", {}).get("session_mode", "persistent_thread"))
         self.session_mode.currentTextChanged.connect(self.set_session_mode)
@@ -201,6 +207,7 @@ class MainWindow(QMainWindow):
 
         toolbar.addWidget(QLabel(" Approval "))
         self.approval_policy = QComboBox()
+        self.approval_policy.setToolTip("Choose which tools require manual user approval")
         self.approval_policy.addItems(["guarded", "mostly_auto", "full_auto"])
         self.approval_policy.setCurrentText(self.config.get("app", {}).get("approval_policy", "guarded"))
         self.approval_policy.currentTextChanged.connect(self.set_approval_policy)
@@ -208,6 +215,7 @@ class MainWindow(QMainWindow):
 
         toolbar.addWidget(QLabel(" Access "))
         self.access_mode = QComboBox()
+        self.access_mode.setToolTip("Choose the strictness of filesystem path access boundaries")
         self.access_mode.addItems(["restricted", "ask", "full"])
         self.access_mode.setCurrentText(self.config.get("security", {}).get("access_mode", "restricted"))
         self.access_mode.currentTextChanged.connect(self.set_access_mode)
@@ -215,6 +223,7 @@ class MainWindow(QMainWindow):
 
         toolbar.addWidget(QLabel(" Agentic "))
         self.agentic_mode = QComboBox()
+        self.agentic_mode.setToolTip("Choose whether to force Gemini to use local tools when capable")
         self.agentic_mode.addItems(["force_tools", "observe"])
         force_tools = bool(self.config.get("agent", {}).get("force_tool_calls_for_local_actions", True))
         self.agentic_mode.setCurrentText("force_tools" if force_tools else "observe")
@@ -223,6 +232,7 @@ class MainWindow(QMainWindow):
 
         toolbar.addWidget(QLabel(" Model "))
         self.model_mode = QComboBox()
+        self.model_mode.setToolTip("Choose the Gemini model level to use")
         self.model_mode.addItems(list(MODEL_MODES.keys()))
         self.model_mode.setCurrentText(self.config.get("gemini", {}).get("model_mode", "fast"))
         self.model_mode.currentTextChanged.connect(self.set_model_mode)
@@ -289,6 +299,8 @@ class MainWindow(QMainWindow):
         for key, feature in FEATURE_MODES.items():
             feature_btn = QPushButton(feature["button"])
             feature_btn.setObjectName("FeatureButton")
+            feature_btn.setToolTip(f"Activate Gemini {feature['display']} mode")
+            feature_btn.setCursor(Qt.PointingHandCursor)
             feature_btn.clicked.connect(lambda _checked=False, mode_key=key: self.activate_feature_mode(mode_key))
             self.feature_buttons[key] = feature_btn
             feature_row.addWidget(feature_btn)
@@ -304,21 +316,29 @@ class MainWindow(QMainWindow):
 
         attach_btn = QPushButton("Attach")
         attach_btn.setObjectName("ComposerAction")
+        attach_btn.setToolTip("Attach files to send to Gemini")
+        attach_btn.setCursor(Qt.PointingHandCursor)
         attach_btn.clicked.connect(self.attach_files)
         action_row.addWidget(attach_btn)
 
         paste_image_btn = QPushButton("Paste Image")
         paste_image_btn.setObjectName("ComposerAction")
+        paste_image_btn.setToolTip("Paste an image from the clipboard")
+        paste_image_btn.setCursor(Qt.PointingHandCursor)
         paste_image_btn.clicked.connect(self.paste_clipboard_image)
         action_row.addWidget(paste_image_btn)
 
         send_btn = QPushButton("Send")
         send_btn.setObjectName("PrimaryComposerAction")
+        send_btn.setToolTip("Send the current message to Gemini")
+        send_btn.setCursor(Qt.PointingHandCursor)
         send_btn.clicked.connect(self.send_message)
         action_row.addWidget(send_btn)
 
         stop_btn = QPushButton("Stop")
         stop_btn.setObjectName("ComposerAction")
+        stop_btn.setToolTip("Stop the current Gemini response or tool execution loop")
+        stop_btn.setCursor(Qt.PointingHandCursor)
         stop_btn.clicked.connect(self.agent.stop)
         action_row.addWidget(stop_btn)
 

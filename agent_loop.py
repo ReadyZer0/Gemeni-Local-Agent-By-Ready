@@ -653,20 +653,20 @@ class GeminiAgentLoop(QObject):
         hint = ""
         if GeminiAgentLoop._looks_like_plain_file_request(text):
             hint = (
-                "Recommended first tool for this request: use ~@write@~. "
+                "Recommended first tool for this request: use the write tool. "
                 "Put the full target file path on the first payload line, then the requested text content on the remaining lines."
             )
         elif GeminiAgentLoop._looks_like_artifact_request(text):
             hint = (
-                "Recommended first tool for this request: use ~@write@~. "
+                "Recommended first tool for this request: use the write tool. "
                 "Create the requested local file directly instead of making a Gemini artifact card."
             )
         elif "folder" in text or "directory" in text:
-            hint = "Recommended first tool for this request: use ~@mkdir@~ for creation or ~@explorer@~ for listing."
+            hint = "Recommended first tool for this request: use the mkdir tool for creation or the explorer tool for listing."
         elif any(word in text for word in ["read", "open file", "show file"]):
-            hint = "Recommended first tool for this request: use ~@read@~ for files or ~@explorer@~ for folders."
+            hint = "Recommended first tool for this request: use the read tool for files or the explorer tool for folders."
         elif any(word in text for word in ["run", "powershell", "command", "terminal", "wsl"]):
-            hint = "Recommended first tool for this request: use ~@powershell@~, ~@terminal@~, or ~@wsl@~ as requested."
+            hint = "Recommended first tool for this request: use the powershell, terminal, or wsl tool as requested."
         else:
             hint = "Choose the single real tool that directly performs the user's local action."
 
@@ -727,9 +727,7 @@ class GeminiAgentLoop(QObject):
             "LOCAL AGENT TOOL MISMATCH:\n"
             "The previous tool call only inspected/listed files and did not create the requested file.\n"
             "For this create-file request, generate the requested local file with exactly one write block and no text outside the block.\n\n"
-            f"Use this exact target path on the first payload line: {target_path}\n"
-            "For a website/webpage, the file content must start with <!DOCTYPE html> and end with </html>.\n"
-            "Do not copy any instruction sentence into the file content.\n\n"
+            f"Use this exact target path on the first payload line: {target_path}\n\n"
             f"USER REQUEST:\n{self.current_user_text.strip()}"
         )
         self.status_signal.emit("Correcting Gemini tool choice")
@@ -753,8 +751,7 @@ class GeminiAgentLoop(QObject):
             "The previous write/append payload did not put a valid file path on the first payload line, or it copied placeholder text.\n"
             "Reply again with exactly one clean write block. No prose outside the block.\n\n"
             f"Use this exact target path on the first payload line: {target_path}\n"
-            "The remaining lines must be the real complete file content, not instructions or placeholders.\n"
-            "For a website/webpage, start the content with <!DOCTYPE html> and end with </html>.\n\n"
+            "The remaining lines must be the real complete file content, not instructions or placeholders.\n\n"
             f"USER REQUEST:\n{self.current_user_text.strip()}"
         )
         self.status_signal.emit("Correcting Gemini tool payload")
@@ -780,7 +777,7 @@ class GeminiAgentLoop(QObject):
         if not candidate:
             return ""
         filename, body = candidate
-        if "LOCAL AGENT ENFORCEMENT:" in body:
+        if "LOCAL AGENT ENFORCEMENT:" in body or "LOCAL AGENT TOOL MISMATCH:" in body or "LOCAL AGENT TOOL PAYLOAD ERROR:" in body:
             return ""
         target_path = self._unique_artifact_path(self._artifact_recovery_base_dir(filename) / filename)
         call = ToolCall("write", f"{target_path}\n{body}", "~@write@~", 0)

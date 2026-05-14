@@ -336,7 +336,7 @@ Use TLS, SSH keys, firewall rules, Fail2Ban, and least-privilege access.
 
         prompt = loop._tool_enforcement_prompt()
 
-        self.assertIn("Recommended first tool for this request: use ~@write@~", prompt)
+        self.assertIn("Recommended first tool for this request: use the write tool", prompt)
 
 
 if __name__ == "__main__":

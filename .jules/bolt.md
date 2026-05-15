@@ -1,0 +1,3 @@
+## 2026-05-15 - Memory Cache Optimization
+**Learning:** `mcp_gateway.py` loads `memory.json` on each memory access (`_load_memory`). Reading and JSON parsing a file on disk over and over is an expensive performance bottleneck when the agent frequently accesses memory during its thought process.
+**Action:** Implemented caching for `memory.json` using `st_mtime` to track file modification time. This skips JSON parsing and disk I/O as long as the file hasn't been changed externally or locally, saving execution time. Next time I notice high frequency reads of local files for configuration or state, look for caching opportunities.

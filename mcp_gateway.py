@@ -35,6 +35,8 @@ class ToolGateway:
         self.memory_path.parent.mkdir(parents=True, exist_ok=True)
         self.approval_callback = approval_callback
         self.last_browser_url = ""
+        self._memory_cache: dict | None = None
+        self._memory_cache_mtime: float = 0.0
 
     def execute(self, call: ToolCall) -> GatewayResult:
         enabled = set(self.config.get("tools", {}).get("enabled", []))
@@ -543,6 +545,8 @@ with sync_playwright() as p:
         memory = self._load_memory()
         memory[key] = value.strip()
         self.memory_path.write_text(json.dumps(memory, indent=2, ensure_ascii=False), encoding="utf-8")
+        self._memory_cache = memory
+        self._memory_cache_mtime = self.memory_path.stat().st_mtime
         return GatewayResult(True, f"[OK] Stored memory key: {key}")
 
     def _tool_mcp_status(self, raw: str) -> GatewayResult:
@@ -823,8 +827,15 @@ $ok = $proc.CloseMainWindow()
         if not self.memory_path.exists():
             return {}
         try:
+            mtime = self.memory_path.stat().st_mtime
+            if self._memory_cache is not None and self._memory_cache_mtime >= mtime:
+                return self._memory_cache
             data = json.loads(self.memory_path.read_text(encoding="utf-8"))
-            return data if isinstance(data, dict) else {}
+            if isinstance(data, dict):
+                self._memory_cache = data
+                self._memory_cache_mtime = mtime
+                return data
+            return {}
         except Exception:
             return {}
 

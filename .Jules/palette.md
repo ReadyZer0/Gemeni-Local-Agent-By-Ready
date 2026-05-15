@@ -1,0 +1,3 @@
+## 2026-05-15 - Missing Hover Affordances in PySide6 Desktop Apps
+**Learning:** PySide6 desktop applications, unlike web apps, often lack default visual hover affordances for custom widgets and interactive buttons, making them appear non-interactive and hindering accessibility. This project's memory explicitly identifies adding `setCursor(Qt.PointingHandCursor)` and `setToolTip()` as critical UX practices for discoverability in PySide6.
+**Action:** When building or modifying PySide6 UI elements, proactively evaluate buttons and custom interactive widgets to ensure they have appropriate cursors and clear, descriptive tooltips to bridge the interaction gap between desktop and web expectations.

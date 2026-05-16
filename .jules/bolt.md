@@ -1,0 +1,3 @@
+## 2024-05-16 - [Optimize History Store Events Reading]
+**Learning:** Iterating over a file line by line (`with file.open() as f: for line in f:`) is significantly more memory and time efficient for large session files than reading the whole file into a string and splitting it (`file.read_text().splitlines()`). In local benchmarking, the memory overhead of the string allocation and split process can become a measurable bottleneck for the application's responsiveness.
+**Action:** When reading potentially large files (like JSONL or logs), use iterative line processing (`for line in f:`) instead of loading the entire content into memory, to maintain low memory usage and high responsiveness.

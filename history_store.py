@@ -103,11 +103,17 @@ class HistoryStore:
         if not path.exists():
             return []
         items: list[dict[str, Any]] = []
-        for line in path.read_text(encoding="utf-8", errors="replace").splitlines():
-            try:
-                item = json.loads(line)
-            except Exception:
-                continue
-            if isinstance(item, dict):
-                items.append(item)
+        # Optimization: Iterate over file object instead of reading all contents into memory
+        # to improve performance and reduce memory usage for large session histories.
+        with path.open("r", encoding="utf-8", errors="replace") as f:
+            for line in f:
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    item = json.loads(line)
+                except Exception:
+                    continue
+                if isinstance(item, dict):
+                    items.append(item)
         return items

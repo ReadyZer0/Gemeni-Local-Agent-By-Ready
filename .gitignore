@@ -8,3 +8,5 @@ data/logs/
 data/memory/
 data/artifacts/
 data/**/*.jsonl
+test_data*
+benchmark*

@@ -1,0 +1,3 @@
+## 2024-05-16 - Add tooltips and pointing hand cursors to PySide6 interactive elements
+**Learning:** By default, PySide6 `QPushButton`s and `QComboBox`es do not have a pointing hand cursor on hover or informative tooltips, reducing discoverability and accessibility.
+**Action:** Proactively apply `setToolTip()` for non-obvious UI elements (like configuration comboboxes) and `setCursor(Qt.PointingHandCursor)` for clickable custom widgets or buttons to ensure accessibility and visual discoverability in PySide6 applications.

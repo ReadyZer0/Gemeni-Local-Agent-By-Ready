@@ -103,11 +103,12 @@ class HistoryStore:
         if not path.exists():
             return []
         items: list[dict[str, Any]] = []
-        for line in path.read_text(encoding="utf-8", errors="replace").splitlines():
-            try:
-                item = json.loads(line)
-            except Exception:
-                continue
-            if isinstance(item, dict):
-                items.append(item)
+        with path.open("r", encoding="utf-8", errors="replace") as f:
+            for line in f:
+                try:
+                    item = json.loads(line)
+                except Exception:
+                    continue
+                if isinstance(item, dict):
+                    items.append(item)
         return items

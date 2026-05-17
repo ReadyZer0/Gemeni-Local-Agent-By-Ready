@@ -289,6 +289,8 @@ class MainWindow(QMainWindow):
         for key, feature in FEATURE_MODES.items():
             feature_btn = QPushButton(feature["button"])
             feature_btn.setObjectName("FeatureButton")
+            feature_btn.setCursor(Qt.PointingHandCursor)
+            feature_btn.setToolTip(f"Activate {feature['display']} mode")
             feature_btn.clicked.connect(lambda _checked=False, mode_key=key: self.activate_feature_mode(mode_key))
             self.feature_buttons[key] = feature_btn
             feature_row.addWidget(feature_btn)
@@ -304,21 +306,25 @@ class MainWindow(QMainWindow):
 
         attach_btn = QPushButton("Attach")
         attach_btn.setObjectName("ComposerAction")
+        attach_btn.setCursor(Qt.PointingHandCursor)
         attach_btn.clicked.connect(self.attach_files)
         action_row.addWidget(attach_btn)
 
         paste_image_btn = QPushButton("Paste Image")
         paste_image_btn.setObjectName("ComposerAction")
+        paste_image_btn.setCursor(Qt.PointingHandCursor)
         paste_image_btn.clicked.connect(self.paste_clipboard_image)
         action_row.addWidget(paste_image_btn)
 
         send_btn = QPushButton("Send")
         send_btn.setObjectName("PrimaryComposerAction")
+        send_btn.setCursor(Qt.PointingHandCursor)
         send_btn.clicked.connect(self.send_message)
         action_row.addWidget(send_btn)
 
         stop_btn = QPushButton("Stop")
         stop_btn.setObjectName("ComposerAction")
+        stop_btn.setCursor(Qt.PointingHandCursor)
         stop_btn.clicked.connect(self.agent.stop)
         action_row.addWidget(stop_btn)
 

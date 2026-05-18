@@ -4,7 +4,7 @@ import threading
 from dataclasses import dataclass
 from typing import Any
 
-from PySide6.QtCore import QObject, Signal, Slot
+from PySide6.QtCore import QObject, Signal, Slot, Qt
 from PySide6.QtWidgets import QDialog, QHBoxLayout, QLabel, QPushButton, QTextEdit, QVBoxLayout
 
 
@@ -63,7 +63,11 @@ class ApprovalBridge(QObject):
         buttons = QHBoxLayout()
         approve = QPushButton("Approve")
         deny = QPushButton("Deny")
+        approve.setCursor(Qt.CursorShape.PointingHandCursor)
+        approve.setToolTip("Approve this action")
         approve.setStyleSheet("color: #10b981;")
+        deny.setCursor(Qt.CursorShape.PointingHandCursor)
+        deny.setToolTip("Deny this action")
         deny.setStyleSheet("color: #fb7185;")
         buttons.addWidget(approve)
         buttons.addWidget(deny)

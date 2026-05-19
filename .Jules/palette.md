@@ -1,0 +1,3 @@
+## 2026-05-19 - Add hand cursors and tooltips to PySide6 buttons
+**Learning:** In PySide6, standard buttons (QPushButton) don't automatically display a pointing hand cursor on hover, and their function might not be immediately obvious without screen reader support or tooltips.
+**Action:** Always proactively apply `setToolTip()` for non-obvious UI elements and use `setCursor(Qt.PointingHandCursor)` for clickable custom widgets or buttons to ensure accessibility and visual discoverability.
